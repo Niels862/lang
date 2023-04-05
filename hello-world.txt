@@ -1,0 +1,8 @@
+function main {
+    x = 5;
+    d = 69.420;
+    msg = "Hello world";
+    print msg;
+}
+
+main;

@@ -1,0 +1,7 @@
+function main
+	assign a (input 1)
+	assign b (input 1)
+	assign out (add [a] [b])
+	print out
+
+call main

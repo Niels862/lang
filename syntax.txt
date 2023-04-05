@@ -1,0 +1,31 @@
+blocks by indentation
+change of indentation -> enter/leave block
+expression = [keyword] [operand]*
+assign variable to current stack position with declare [identifier]
+dereference variable with []
+include expression as operand with brackets: 
+add [x] (mul [y] 3)
+push (add [a] [b])
+endline = end of statement
+every variable is a stack address and can always be set or changed with declare and removed with remove
+string is saved by pushing every character followed by \0
+
+assign [x] (add [a] [b])
+is equivalent to
+declare x
+push (add [a] [b])
+
+basic example:
+
+function main
+	assign msg "hello world"
+	print msg
+
+call main
+
+with loop:
+
+assign i 0
+assign end 10
+while less [i] [end]:
+	set i (add [i] 1)
