@@ -1,6 +1,5 @@
-function main {
-    x = 5;
-    d = 69.420;
+function main argc argv {
+    x = 4677564;
     msg = "Hello world";
     print msg;
 }

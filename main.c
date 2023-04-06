@@ -1,7 +1,6 @@
 #include "lexer.h"
 #include "parser.h"
 #include "linkedlist.h"
-#include "tree.h"
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {

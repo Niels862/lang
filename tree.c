@@ -31,7 +31,7 @@ TreeNode *Tree_add_child(TreeNode *node, void *data) {
     TreeNode *child = malloc(sizeof(TreeNode));
     child->data = data;
     child->parent = node;
-    child->child = child->sibling = NULL;;
+    child->child = child->sibling = NULL;
     if (node->child == NULL) {
         node->child = child;
     } else {
@@ -53,11 +53,14 @@ TreeNode *Tree_add_sibling(TreeNode *node, void *data) {
     return sibling;
 }
 
-void Tree_destruct(TreeNode *node) {
+void Tree_destruct(TreeNode *node, void (*destructor)(void *)) {
     if (node == NULL) {
         return;
     }
-    Tree_destruct(node->sibling);
-    Tree_destruct(node->child);
+    Tree_destruct(node->sibling, destructor);
+    Tree_destruct(node->child, destructor);
+    if (node->data != NULL) {
+        destructor(node->data);
+    }
     free(node);
 }

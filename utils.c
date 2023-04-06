@@ -28,23 +28,25 @@ void print_num(int n, int base) {
 }
 
 void print_string(char *s, char left, char right) {
+    unsigned char c;
     if (left) {
         printf("%c", left);
     }
     while (*s != '\0') {
-        if (*s == '"') {
+        c = *s;
+        if (c == '"') {
             printf("\\\"");
-        } else if (*s >= 32 && *s <= 127) {
-            printf("%c", *s);
-        } else if (*s == '\n') {
+        } else if (c >= 32 && c <= 127) {
+            printf("%c", c);
+        } else if (c == '\n') {
             printf("\\n");
-        } else if (*s == '\r') {
+        } else if (c == '\r') {
             printf("\\r");
-        } else if (*s == '\t') {
+        } else if (c == '\t') {
             printf("\\t");
         } else {
             printf("\\");
-            print_num(*s, 16);
+            print_num(c, 16);
         }
         s++;
     }

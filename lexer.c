@@ -23,6 +23,14 @@ void print_token(void *data) {
     }
 }
 
+Token *copy_token(Token *token) {
+    Token *copy = malloc(sizeof(Token));
+    copy->type = token->type;
+    copy->data = malloc(sizeof(token->data));
+    memcpy(copy->data, token->data, sizeof(token->data));
+    return copy;
+}
+
 void destruct_token(void *data) {
     free(((Token *)data)->data);
     free(data);
@@ -36,12 +44,12 @@ int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int 
         if (c == '"' && *pLexeme_size > 1) {
             LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size));
             (*pLexeme_size) = 0;
-        } else if (c == '\n') {
+        } else if (c == '\n' || c == EOF) {
             printf("Unexpected EOL: line %d\n", *pLine);
             return 1;
         }
     } else if (c == ' ' || c == '\t' || c == '\n' || c == '(' || c == ')'
-            || c == '{' || c == '}' || c == '[' || c == ']' || c == ';') {
+            || c == '{' || c == '}' || c == '[' || c == ']' || c == ';' || c == EOF) {
         if (*pLexeme_size) {
             LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size));
             (*pLexeme_size) = 0;
@@ -175,10 +183,10 @@ int lexer(FILE *file, LinkedList *tokens) {
         for (i = 0; i < n_read; i++) {
             if (lexer_char(buffer[i], tokens, lexeme, &lexeme_size, &line)) {
                 return 1;
-            };
+            }
         }
     } while (n_read);
-    if (lexer_char('\n', tokens, lexeme, &lexeme_size, &line)) {
+    if (lexer_char(EOF, tokens, lexeme, &lexeme_size, &line)) {
         return 1;
     }
     return 0;

@@ -33,6 +33,7 @@ static const Keyword keywords[] = {
 };
 
 void print_token(void *data);
+Token *copy_token(Token *token);
 void destruct_token(void *data);
 int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int *pLine);
 int lexeme_is_keyword(const char *lexeme, int lexeme_size, int *n);
