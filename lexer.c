@@ -4,7 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 
-void print_token(void *data) {
+void Token_print(void *data) {
     Token *token = data;
     if (token->data == NULL) {
         printf("NULL");
@@ -23,15 +23,16 @@ void print_token(void *data) {
     }
 }
 
-Token *copy_token(Token *token) {
+Token *Token_copy(Token *token) {
     Token *copy = malloc(sizeof(Token));
     copy->type = token->type;
     copy->data = malloc(sizeof(token->data));
+    // TODO: token should track size of data to properly copy data
     memcpy(copy->data, token->data, sizeof(token->data));
     return copy;
 }
 
-void destruct_token(void *data) {
+void Token_destruct(void *data) {
     free(((Token *)data)->data);
     free(data);
 }

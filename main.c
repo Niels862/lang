@@ -17,11 +17,11 @@ int main(int argc, char *argv[]) {
     }
     tokens = LL_new();
     lexer(file, tokens);
-    LL_print(tokens, print_token);
+    LL_print(tokens, Token_print);
 
     parser(tokens);
 
-    LL_destruct(tokens, destruct_token);
+    LL_destruct(tokens, Token_destruct);
     fclose(file);
     return 0;
 }
