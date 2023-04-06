@@ -15,6 +15,7 @@ typedef struct {
 void LL_print(LinkedList *list, void (*printer)(void *));
 LinkedList *LL_new();
 LLNode *LL_add(LinkedList *list, void *data);
+void LL_next(LLNode **pNode);
 void LL_destruct(LinkedList *list, void (*destructor)(void *));
 
 #endif

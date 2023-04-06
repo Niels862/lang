@@ -20,7 +20,7 @@ int ast_block(LLNode **node, TreeNode *ast_node) {
         string = token->data;
 
         if (token->type == TTSeparator && *string == '{') {
-            *node = (*node)->next;
+            LL_next(node);
             ast_block(
                     node,
                     Tree_add_child(ast_node, Tree_new())
@@ -28,7 +28,7 @@ int ast_block(LLNode **node, TreeNode *ast_node) {
         } else {
             Tree_add_child(ast_node, Token_copy(token));
         }
-        *node = (*node)->next;
+        LL_next(node);
     } while (!(token->type == TTSeparator && (*string == '}' || *string == EOF)));
     return 0;
 }

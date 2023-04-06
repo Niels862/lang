@@ -37,6 +37,10 @@ LLNode *LL_add(LinkedList *list, void *data) {
     return node;
 }
 
+void LL_next(LLNode **pNode) {
+    *pNode = (*pNode)->next;
+}
+
 void LL_destruct(LinkedList *list, void (*destructor)(void *)) {
     LLNode *node = list->first;
     LLNode *temp;
