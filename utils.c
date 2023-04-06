@@ -12,19 +12,19 @@ void malloc_string(void **pDest, char *source, int length) {
 void print_num(int n, int base) {
     int i = 0;
     int digit;
-    char buffer[20];
+    char buffer[65];
+    buffer[64] = '\0';
     while (n) {
         digit = n % base;
         if (digit < 10) {
-            buffer[i] = (char)(digit + '0');
+            buffer[63 - i] = (char)(digit + '0');
         } else {
-            buffer[i] = (char)(digit - 10 + 'A');
+            buffer[63 - i] = (char)(digit - 10 + 'A');
         }
         i++;
         n /= base;
     }
-    buffer[i] = '\0';
-    printf("%s", buffer);
+    printf("%s", buffer + 64 - i);
 }
 
 void print_string(char *s, char left, char right) {

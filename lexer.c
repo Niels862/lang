@@ -1,23 +1,31 @@
 #include "lexer.h"
+#include "datablock.h"
 #include "utils.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
+void get_token_and_string(void *data, Token **pToken, char **pString) {
+    *pToken = data;
+    *pString = (*pToken)->block->data;
+}
+
 void Token_print(void *data) {
-    Token *token = data;
-    if (token->data == NULL) {
+    Token *token;
+    char *string;
+    get_token_and_string(data, &token, &string);
+    if (token->block->data == NULL) {
         printf("NULL");
     } else if (token->type == TTStringLit) {
-        print_string((char *)(token->data), '"', '"');
+        print_string((char *)(token->block->data), '"', '"');
     } else if (token->type == TTIdentifier || token->type == TTSeparator) {
-        print_string((char *)(token->data), '<', '>');
+        print_string((char *)(token->block->data), '<', '>');
     } else if (token->type == TTKeyword) {
-        printf("(%s)", keywords[*((int *)token->data)].string);
+        printf("(%s)", keywords[*((int *)token->block->data)].string);
     } else if (token->type == TTIntLit) {
-        printf("%d", *(int *)token->data);
+        printf("%d", *(int *)token->block->data);
     } else if (token->type == TTFloatLit) {
-        printf("%f", *(double *)token->data);
+        printf("%f", *(double *)token->block->data);
     } else {
         printf("Type %d?", token->type);
     }
@@ -26,14 +34,12 @@ void Token_print(void *data) {
 Token *Token_copy(Token *token) {
     Token *copy = malloc(sizeof(Token));
     copy->type = token->type;
-    copy->data = malloc(sizeof(token->data));
-    // TODO: token should track size of data to properly copy data
-    memcpy(copy->data, token->data, sizeof(token->data));
+    copy->block = DB_new_copy(token->block->data, token->block->size);
     return copy;
 }
 
 void Token_destruct(void *data) {
-    free(((Token *)data)->data);
+    DB_destruct(((Token *)data)->block);
     free(data);
 }
 
@@ -49,13 +55,13 @@ int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int 
             printf("Unexpected EOL: line %d\n", *pLine);
             return 1;
         }
-    } else if (c == ' ' || c == '\t' || c == '\n' || c == '(' || c == ')'
+    } else if (c == ' ' || c == '\t' || c == '\n' || c == '(' || c == ')' || c == '='
             || c == '{' || c == '}' || c == '[' || c == ']' || c == ';' || c == EOF) {
         if (*pLexeme_size) {
             LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size));
             (*pLexeme_size) = 0;
         }
-        if (c != ' ' && c != '\t') {
+        if (c != ' ' && c != '\t' && c != '\n') {
             LL_add(tokens, lexeme_to_token(&c, 1));
         }
         if (c == '\n') {
@@ -142,31 +148,27 @@ int lexeme_is_identifier(const char *lexeme, int lexeme_size) {
 
 Token *lexeme_to_token(char *lexeme, int lexeme_size) {
     Token *token = malloc(sizeof(Token));
-    token->data = NULL;
     int n;
     double d;
 
     if (lexeme_is_keyword(lexeme, lexeme_size, &n)) {
         token->type = TTKeyword;
-        token->data = malloc(sizeof(int));
-        *((int *)token->data) = n;
+        token->block = DB_new_copy(&n, sizeof(int));
     } else if (lexeme_is_string(lexeme, lexeme_size)) {
         token->type = TTStringLit;
-        malloc_string(&token->data, lexeme + 1, lexeme_size - 2);
+        token->block = DB_new_string(lexeme + 1, lexeme_size - 2);
     } else if (lexeme_is_int(lexeme, lexeme_size, &n)) {
         token->type = TTIntLit;
-        token->data = malloc(sizeof(int));
-        *((int *)token->data) = n;
+        token->block = DB_new_copy(&n, sizeof(int));
     } else if (lexeme_is_float(lexeme, lexeme_size, &d)) {
         token->type = TTFloatLit;
-        token->data = malloc(sizeof(double));
-        *((double *)token->data) = d;
+        token->block = DB_new_copy(&d, sizeof(double));
     } else if (lexeme_is_identifier(lexeme, lexeme_size)) {
         token->type = TTIdentifier;
-        malloc_string(&token->data, lexeme, lexeme_size);
+        token->block = DB_new_string(lexeme, lexeme_size);
     } else if (lexeme_size == 1) {
         token->type = TTSeparator;
-        malloc_string(&token->data, lexeme, lexeme_size);
+        token->block = DB_new_string(lexeme, lexeme_size);
     } else {
         printf("Error while parsing token: %.*s\n", lexeme_size, lexeme);
     }

@@ -1,6 +1,6 @@
-function main argc argv {
-    x = 4677564;
-    msg = "Hello world";
+function main (argc argv) {
+    set x 4677564;
+    set msg "Hello world";
     print msg;
 }
 

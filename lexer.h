@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "linkedlist.h"
+#include "datablock.h"
 
 #ifndef STACK_LANG_LEXER_H
 #define STACK_LANG_LEXER_H
@@ -15,7 +16,7 @@ enum KeywordId {
 };
 
 typedef struct {
-    void *data;
+    DataBlock *block;
     enum TokenType type;
 } Token;
 
@@ -32,6 +33,7 @@ static const Keyword keywords[] = {
         {"else", KWElse}
 };
 
+void get_token_and_string(void *data, Token **pToken, char **pString);
 void Token_print(void *data);
 Token *Token_copy(Token *token);
 void Token_destruct(void *data);

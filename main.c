@@ -19,7 +19,9 @@ int main(int argc, char *argv[]) {
     lexer(file, tokens);
     LL_print(tokens, Token_print);
 
-    parser(tokens);
+    if (parser(tokens)) {
+        return 1;
+    }
 
     LL_destruct(tokens, Token_destruct);
     fclose(file);
