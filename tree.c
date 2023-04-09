@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void Tree_print(TreeNode *node, void (*printer)(void *), int indent) {
+void Tree_print(TreeNode *node, void (*printer)(void *), int indent, int debug) {
     int i;
     if (node == NULL) {
         return;
@@ -10,28 +10,29 @@ void Tree_print(TreeNode *node, void (*printer)(void *), int indent) {
     for (i = 0; i < indent; i++) {
         printf("    ");
     }
+    if (debug) {
+        printf("[#[%p] ^[%p] v[%p] >[%p]]: ", node, node->parent, node->child, node->sibling);
+    }
     if (node->data == NULL) {
         printf("*");
     } else {
         printer(node->data);
     }
     printf("\n");
-    Tree_print(node->child, printer, indent + 1);
-    Tree_print(node->sibling, printer, indent);
+    Tree_print(node->child, printer, indent + 1, debug);
+    Tree_print(node->sibling, printer, indent, debug);
 }
 
 TreeNode *Tree_new() {
     TreeNode *node = malloc(sizeof(TreeNode));
     node->data = node->child = node->parent = node->sibling = NULL;
+    node->child = node->sibling = NULL;
     return node;
 }
 
-TreeNode *Tree_add_child(TreeNode *node, void *data) {
+TreeNode *Tree_add_child_node(TreeNode *node, TreeNode *child) {
     TreeNode *temp;
-    TreeNode *child = malloc(sizeof(TreeNode));
-    child->data = data;
     child->parent = node;
-    child->child = child->sibling = NULL;
     if (node->child == NULL) {
         node->child = child;
     } else {
@@ -44,6 +45,12 @@ TreeNode *Tree_add_child(TreeNode *node, void *data) {
     return child;
 }
 
+TreeNode *Tree_add_child(TreeNode *node, void *data) {
+    TreeNode *child = malloc(sizeof(TreeNode));
+    child->data = data;
+    return Tree_add_child_node(node, child);
+}
+
 TreeNode *Tree_add_sibling(TreeNode *node, void *data) {
     TreeNode *sibling = malloc(sizeof(TreeNode));
     sibling->data = data;
@@ -51,6 +58,17 @@ TreeNode *Tree_add_sibling(TreeNode *node, void *data) {
     sibling->sibling = sibling->child = NULL;
     node->sibling = sibling;
     return sibling;
+}
+
+int Tree_count_children(TreeNode *node) {
+    TreeNode *child = node->child;
+    int n = 0;
+
+    while (child != NULL) {
+        child = child->sibling;
+        n++;
+    }
+    return n;
 }
 
 void Tree_destruct(TreeNode *node, void (*destructor)(void *)) {

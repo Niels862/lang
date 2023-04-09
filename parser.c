@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "grammar.h"
 #include "lexer.h"
 #include "tree.h"
 
@@ -93,14 +94,16 @@ int ast_body(LLNode **node, TreeNode *ast_node) {
 }
 
 int parser(LinkedList *tokens) {
-    TreeNode *ast = Tree_new();
-    LLNode *node = tokens->first;
+    TreeNode **rules;
+    FILE *grammar_file;
 
-    if (ast_block(&node, ast)) {
+    grammar_file = fopen("grammar.bin", "rb");
+    if (grammar_file == NULL) {
+        printf("Parsing error: grammar.bin not found");
         return 1;
     }
-
-    Tree_print(ast, Token_print, 0);
-    Tree_destruct(ast, Token_destruct);
+    rules = parse_grammar_file(grammar_file);
+    fclose(grammar_file);
+    free(rules);
     return 0;
 }

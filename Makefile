@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall
 
-all: main.o parser.o lexer.o linkedlist.o tree.o datablock.o utils.o
-	$(CC) $(CFLAGS) -Wall -o main utils.o datablock.o linkedlist.o tree.o lexer.o parser.o main.o
+all: main.o parser.o lexer.o grammar.o linkedlist.o tree.o datablock.o utils.o
+	$(CC) $(CFLAGS) -Wall -o main utils.o datablock.o linkedlist.o tree.o grammar.o lexer.o parser.o main.o
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c -o main.o
 parser.o: parser.c parser.h
