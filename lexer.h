@@ -8,11 +8,12 @@
 #define BUFFER_SIZE 16
 
  enum TokenType {
-    TTKeyword, TTSeparator, TTIdentifier, TTIntLit, TTStringLit, TTFloatLit
+    TTKeyword = 0, TTSeparator = 1, TTIdentifier = 2,
+    TTIntLit = 3, TTStringLit = 4, TTFloatLit = 5
 };
 
 enum KeywordId {
-    KWFunction, KWWhile, KWFor, KWIf, KWElse
+    KWFunction = 0, KWWhile = 1, KWFor = 2, KWIf = 3, KWElse = 4
 };
 
 typedef struct {
