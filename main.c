@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
     if (argc > 1) {
         file = fopen(argv[1], "rb");
     } else {
-        file = fopen("hello-world.txt", "rb");
+        file = fopen("test.txt", "rb");
     }
     if (file == NULL) {
         printf("Could not open file\n");

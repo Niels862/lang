@@ -7,14 +7,18 @@
 
 void get_token_and_string(void *data, Token **pToken, char **pString) {
     *pToken = data;
-    *pString = (*pToken)->block->data;
+    if ((*pToken)->block == NULL) {
+        *pString = NULL;
+    } else {
+        *pString = (*pToken)->block->data;
+    }
 }
 
 void Token_print(void *data) {
     Token *token;
     char *string;
     get_token_and_string(data, &token, &string);
-    if (token->block->data == NULL) {
+    if (string == NULL) {
         printf("NULL");
     } else if (token->type == TTStringLit) {
         print_string((char *)(token->block->data), '"', '"');
@@ -179,7 +183,8 @@ int lexer(FILE *file, LinkedList *tokens) {
     char buffer[BUFFER_SIZE];
     char lexeme[256];
     size_t n_read;
-    int lexeme_size = 0, line = 1;
+    int lexeme_size = 0;
+    int line = 1;
     int i;
     do {
         n_read = fread(buffer, sizeof(char), BUFFER_SIZE, file);

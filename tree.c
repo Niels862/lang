@@ -30,6 +30,12 @@ TreeNode *Tree_new() {
     return node;
 }
 
+TreeNode *Tree_new_data(void *data) {
+    TreeNode *node = Tree_new();
+    node->data = data;
+    return node;
+}
+
 TreeNode *Tree_add_child_node(TreeNode *node, TreeNode *child) {
     TreeNode *temp;
     child->parent = node;
@@ -48,6 +54,8 @@ TreeNode *Tree_add_child_node(TreeNode *node, TreeNode *child) {
 TreeNode *Tree_add_child(TreeNode *node, void *data) {
     TreeNode *child = malloc(sizeof(TreeNode));
     child->data = data;
+    child->sibling = NULL;
+    child->child = NULL;
     return Tree_add_child_node(node, child);
 }
 

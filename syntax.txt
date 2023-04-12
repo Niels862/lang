@@ -1,31 +1,49 @@
-blocks by indentation
-change of indentation -> enter/leave block
-expression = [keyword] [operand]*
-assign variable to current stack position with declare [identifier]
-dereference variable with []
-include expression as operand with brackets: 
-add [x] (mul [y] 3)
-push (add [a] [b])
-endline = end of statement
-every variable is a stack address and can always be set or changed with declare and removed with remove
-string is saved by pushing every character followed by \0
+link object
+run object
 
-assign [x] (add [a] [b])
-is equivalent to
-declare x
-push (add [a] [b])
+linking concatenates code from link files and sets pointers to labels to appropriate positions
 
-basic example:
 
-function main
-	assign msg "hello world"
-	print msg
+fun rule_matcher(list_node, rules, rule, ast_node) {
+    if (token rule and match) {
+        add node with token as child to ast_node
+        return 0
+    }
+    if (one child must match) {
+        for each rule_child of rule {
+            list_pos = pos of list_node
+            ast_branch = rec_desc_parser(list_node, rules, rule_child)
+            if (ast_branch) {
+                add branch to ast
+                return 0
+            }
+            list_node to list_pos
+        }
+        return 1
+    }
+    if (all children) {
 
-call main
+    }
+}
 
-with loop:
 
-assign i 0
-assign end 10
-while less [i] [end]:
-	set i (add [i] 1)
+fun rec_desc_parser(list_node, rules, rule) {
+    ast_node = new empty node
+
+    if (one match) {
+        err = match(list_node, rules, rule, ast_node)
+        if (required match and err) {
+            delete ast_node
+            return null
+        }
+    }
+
+    if (optional matches) {
+        err = 0
+        while (not err) {
+            err = match(list_node, rules, rule, ast_node)
+        }
+    }
+
+    return ast_node
+}
