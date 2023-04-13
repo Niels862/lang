@@ -59,9 +59,10 @@ TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
             return ast_branch;
         }
     } else if (gr_node->ctx == CTX_RULE) {
-        ast_branch = recursive_descent_parser(pLl_node,
-                                              rules[gr_node->target],
-                                              rules);
+        ast_branch = recursive_descent_parser(
+                pLl_node,
+                rules[gr_node->target],
+                rules);
         if (ast_branch != NULL) {
             return ast_branch;
         }
@@ -82,11 +83,12 @@ TreeNode *recursive_descent_parser(LLNode **pLl_node, TreeNode *rule, TreeNode *
     if (gr_node->q_low || (!gr_node->q_low && gr_node->q_high)) {
         ast_branch = match(pLl_node, rule, rules);
         // return if not at least one
-        if (ast_branch == NULL && gr_node->q_low) {
+        if (ast_branch != NULL) {
+            printf("lo %p\n", ast_branch);
+            Tree_add_child_node(ast_node, ast_branch);
+        } else if (gr_node->q_low) {
             Tree_destruct(ast_node, Token_destruct);
             return NULL;
-        } else {
-            Tree_add_child_node(ast_node, ast_branch);
         }
     }
 
