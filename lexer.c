@@ -37,8 +37,9 @@ void Token_print(void *data) {
 
 Token *Token_copy(Token *token) {
     Token *copy = malloc(sizeof(Token));
-    copy->type = token->type;
     copy->block = DB_new_copy(token->block->data, token->block->size);
+    copy->line = token->line;
+    copy->type = token->type;
     return copy;
 }
 
@@ -53,7 +54,7 @@ int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int 
         lexeme[*pLexeme_size] = c;
         (*pLexeme_size)++;
         if (c == '"' && *pLexeme_size > 1) {
-            LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size));
+            LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size, *pLine));
             (*pLexeme_size) = 0;
         } else if (c == '\n' || c == EOF) {
             printf("Unexpected EOL: line %d\n", *pLine);
@@ -62,11 +63,11 @@ int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int 
     } else if (c == ' ' || c == '\t' || c == '\n' || c == '(' || c == ')' || c == '='
             || c == '{' || c == '}' || c == '[' || c == ']' || c == ';' || c == EOF) {
         if (*pLexeme_size) {
-            LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size));
+            LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size, *pLine));
             (*pLexeme_size) = 0;
         }
         if (c != ' ' && c != '\t' && c != '\n') {
-            LL_add(tokens, lexeme_to_token(&c, 1));
+            LL_add(tokens, lexeme_to_token(&c, 1, *pLine));
         }
         if (c == '\n') {
             (*pLine)++;
@@ -150,7 +151,7 @@ int lexeme_is_identifier(const char *lexeme, int lexeme_size) {
     return 1;
 }
 
-Token *lexeme_to_token(char *lexeme, int lexeme_size) {
+Token *lexeme_to_token(char *lexeme, int lexeme_size, int line) {
     Token *token = malloc(sizeof(Token));
     int n;
     double d;

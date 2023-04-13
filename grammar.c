@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 int depth = 0;
+int count = 0;
 
 void grammar_node_print(void *data) {
     GrammarNode *gr_node = data;
@@ -11,58 +12,91 @@ void grammar_node_print(void *data) {
            gr_node->ctx, gr_node->token_type, gr_node->target);
 }
 
-// if rule is a match, adds parsed content to ast_node
-int match(TreeNode *ast_node, LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
+TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
+    count++;
+    if (count > 1000) {
+        exit(67);
+    }
     GrammarNode *gr_node = rule->data;
     Token *token = (*pLl_node)->data;
-    TreeNode *ast_branch;
+    TreeNode *ast_branch = NULL;
+    TreeNode *ast_sibling;
     TreeNode *rule_child;
     LLNode *ll_pos = *pLl_node;
-
     if (gr_node->ctx == CTX_TOKEN) {
-        printf("%d %d\n", gr_node->token_type, token->type);
         if (gr_node->token_type == token->type
                 && (gr_node->target == -1
                     || *(char *)(token->block->data) == gr_node->target)) {
-            Tree_add_child(ast_node, Token_copy(token));
             LL_next(pLl_node);
-            return 0;
+            return Tree_new_data(Token_copy(token));
         }
     } else if (gr_node->ctx == CTX_ONE_CHILD) {
         rule_child = rule->child;
-        while (1) {
+        while (rule_child != NULL) {
+            *pLl_node = ll_pos;
             ast_branch = recursive_descent_parser(pLl_node, rule_child, rules);
-            if (rule_child != NULL) {
-                Tree_add_child_node(ast_node, ast_branch);
-                LL_next(pLl_node);
-                return 0;
+            if (ast_branch != NULL) {
+                return ast_branch;
             }
             rule_child = rule_child->sibling;
         }
     } else if (gr_node->ctx == CTX_ALL_CHILDREN) {
-
+        rule_child = rule->child;
+        while (rule_child != NULL) {
+            ast_sibling = recursive_descent_parser(pLl_node, rule_child, rules);
+            if (ast_sibling == NULL) {
+                break;
+            }
+            if (ast_branch == NULL) {
+                ast_branch = ast_sibling;
+            } else {
+                Tree_add_sibling_node(ast_branch, ast_sibling);
+            }
+            rule_child = rule_child->sibling;
+        }
+        if (rule_child == NULL) {
+            Tree_print(ast_branch, Token_print, 0, 0);
+            return ast_branch;
+        }
+    } else if (gr_node->ctx == CTX_RULE) {
+        ast_branch = recursive_descent_parser(pLl_node,
+                                              rules[gr_node->target],
+                                              rules);
+        if (ast_branch != NULL) {
+            return ast_branch;
+        }
     }
+    Tree_destruct(ast_branch, Token_destruct);
     *pLl_node = ll_pos;
-    return 1;
+    return NULL;
 }
 
 TreeNode *recursive_descent_parser(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
     TreeNode *ast_node = Tree_new();
+    TreeNode *ast_branch;
     GrammarNode *gr_node = rule->data;
-    int errorcode;
+    printf(">");
+    grammar_node_print(gr_node);
+    printf("\n");
 
     if (gr_node->q_low || (!gr_node->q_low && gr_node->q_high)) {
+        ast_branch = match(pLl_node, rule, rules);
         // return if not at least one
-        if (match(ast_node, pLl_node, rule, rules) && gr_node->q_low) {
+        if (ast_branch == NULL && gr_node->q_low) {
             Tree_destruct(ast_node, Token_destruct);
             return NULL;
+        } else {
+            Tree_add_child_node(ast_node, ast_branch);
         }
     }
 
     if (!gr_node->q_high) { // q_low or more
-        errorcode = 0;
-        while (!errorcode) {
-            errorcode = match(ast_node, pLl_node, rule, rules);
+        while (1) {
+            ast_branch = match(pLl_node, rule, rules);
+            if (ast_branch == NULL) {
+                break;
+            }
+            Tree_add_child_node(ast_node, ast_branch);
         }
     }
     return ast_node;
@@ -100,7 +134,7 @@ TreeNode **parse_grammar_file(FILE *file, int *pN_rules) {
     fread(&header, sizeof(char), 3, file);
     data_size = header & ((1 << 16) - 1);
     *pN_rules = (header >> 16) & ((1 << 8) - 1);
-    printf("%d, %d\n", data_size, *pN_rules);
+    printf("size: %d, rules: %d\n", data_size, *pN_rules);
     rules = malloc((*pN_rules) * sizeof(TreeNode));
     buffer = malloc(data_size * sizeof(char));
     fread(buffer, sizeof(char), data_size, file);

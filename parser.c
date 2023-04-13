@@ -100,7 +100,7 @@ int parser(LinkedList *tokens) {
     LLNode *first = tokens->first;
     int n_rules, i;
 
-    grammar_file = fopen("test.bin", "rb");
+    grammar_file = fopen("grammar.bin", "rb");
     if (grammar_file == NULL) {
         printf("Parsing error: grammar.bin not found");
         return 1;

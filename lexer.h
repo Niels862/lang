@@ -18,6 +18,7 @@ enum KeywordId {
 
 typedef struct {
     DataBlock *block;
+    int line;
     enum TokenType type;
 } Token;
 
@@ -45,7 +46,7 @@ int lexeme_is_string(const char *lexeme, int lexeme_size);
 int lexeme_is_int(const char *lexeme, int lexeme_size, int *n);
 int lexeme_is_float(const char *lexeme, int lexeme_size, double *d);
 int lexeme_is_identifier(const char *lexeme, int lexeme_size);
-Token *lexeme_to_token(char *lexeme, int lexeme_size);
+Token *lexeme_to_token(char *lexeme, int lexeme_size, int line);
 int lexer(FILE *file, LinkedList *tokens);
 
 #endif

@@ -19,7 +19,7 @@ typedef struct {
 } GrammarNode;
 
 void grammar_node_print(void *data);
-int match(TreeNode *ast_node, LLNode **pLl_node, TreeNode *rule, TreeNode **rules);
+TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules);
 TreeNode *recursive_descent_parser(LLNode **pLl_node, TreeNode *rule, TreeNode **rules);
 TreeNode *parse_grammar_tree(char *buffer, int *p);
 TreeNode **parse_grammar_file(FILE *file, int *pN_rules);

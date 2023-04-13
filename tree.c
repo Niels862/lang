@@ -59,11 +59,11 @@ TreeNode *Tree_add_child(TreeNode *node, void *data) {
     return Tree_add_child_node(node, child);
 }
 
-TreeNode *Tree_add_sibling(TreeNode *node, void *data) {
-    TreeNode *sibling = malloc(sizeof(TreeNode));
-    sibling->data = data;
+TreeNode *Tree_add_sibling_node(TreeNode *node, TreeNode *sibling) {
     sibling->parent = node->parent;
-    sibling->sibling = sibling->child = NULL;
+    while (node->sibling != NULL) {
+        node = node->sibling;
+    }
     node->sibling = sibling;
     return sibling;
 }
