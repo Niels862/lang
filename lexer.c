@@ -153,6 +153,7 @@ int lexeme_is_identifier(const char *lexeme, int lexeme_size) {
 
 Token *lexeme_to_token(char *lexeme, int lexeme_size, int line) {
     Token *token = malloc(sizeof(Token));
+    token->line = line;
     int n;
     double d;
 

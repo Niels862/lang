@@ -55,7 +55,6 @@ TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
             rule_child = rule_child->sibling;
         }
         if (rule_child == NULL) {
-            Tree_print(ast_branch, Token_print, 0, 0);
             return ast_branch;
         }
     } else if (gr_node->ctx == CTX_RULE) {
@@ -67,6 +66,11 @@ TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
             return ast_branch;
         }
     }
+//    printf("No match: aborting call\n");
+//    printf("At token: ");
+//    Token_print(token);
+//    printf(" (line %d)\n", token->line);
+//    Tree_print(ast_branch, Token_print, 0, 0);
     Tree_destruct(ast_branch, Token_destruct);
     *pLl_node = ll_pos;
     return NULL;
@@ -76,15 +80,11 @@ TreeNode *recursive_descent_parser(LLNode **pLl_node, TreeNode *rule, TreeNode *
     TreeNode *ast_node = Tree_new();
     TreeNode *ast_branch;
     GrammarNode *gr_node = rule->data;
-    printf(">");
-    grammar_node_print(gr_node);
-    printf("\n");
 
     if (gr_node->q_low || (!gr_node->q_low && gr_node->q_high)) {
         ast_branch = match(pLl_node, rule, rules);
         // return if not at least one
         if (ast_branch != NULL) {
-            printf("lo %p\n", ast_branch);
             Tree_add_child_node(ast_node, ast_branch);
         } else if (gr_node->q_low) {
             Tree_destruct(ast_node, Token_destruct);

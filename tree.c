@@ -8,7 +8,7 @@ void Tree_print(TreeNode *node, void (*printer)(void *), int indent, int debug) 
         return;
     }
     for (i = 0; i < indent; i++) {
-        printf("    ");
+        printf("  ");
     }
     if (debug) {
         printf("[#[%p] ^[%p] v[%p] >[%p]]: ", node, node->parent, node->child, node->sibling);
