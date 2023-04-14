@@ -13,6 +13,7 @@ void Tree_print(TreeNode *node, void (*printer)(void *), int indent, int debug) 
     if (debug) {
         printf("[#[%p] ^[%p] v[%p] >[%p]]: ", node, node->parent, node->child, node->sibling);
     }
+    printf("(#%d) ", node->label);
     if (node->data == NULL) {
         printf("*");
     } else {
@@ -26,6 +27,7 @@ void Tree_print(TreeNode *node, void (*printer)(void *), int indent, int debug) 
 TreeNode *Tree_new() {
     TreeNode *node = malloc(sizeof(TreeNode));
     node->data = node->child = node->parent = node->sibling = NULL;
+    node->label = 0;
     node->child = node->sibling = NULL;
     return node;
 }
@@ -51,11 +53,29 @@ TreeNode *Tree_add_child_node(TreeNode *node, TreeNode *child) {
     return child;
 }
 
-TreeNode *Tree_add_child(TreeNode *node, void *data) {
-    TreeNode *child = malloc(sizeof(TreeNode));
-    child->data = data;
+TreeNode *Tree_make_orphan(TreeNode *parent, TreeNode *child) {
+    TreeNode *temp;
+    if (parent == NULL || child == NULL) {
+        return child;
+    }
+    child->parent = NULL;
+    if (parent->child == child) {
+        parent->child = child->sibling;
+    } else {
+        temp = parent->child;
+        while (temp->sibling != NULL) {
+            if (temp->sibling == child) {
+                temp->sibling = child->sibling;
+                break;
+            }
+        }
+    }
     child->sibling = NULL;
-    child->child = NULL;
+    return child;
+}
+
+TreeNode *Tree_add_child(TreeNode *node, void *data) {
+    TreeNode *child = Tree_new_data(data);
     return Tree_add_child_node(node, child);
 }
 

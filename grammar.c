@@ -2,9 +2,6 @@
 #include "lexer.h"
 #include <stdlib.h>
 
-int depth = 0;
-int count = 0;
-
 void grammar_node_print(void *data) {
     GrammarNode *gr_node = data;
     printf("[%d:%d] (%d, %d) -> (%d)",
@@ -13,10 +10,6 @@ void grammar_node_print(void *data) {
 }
 
 TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
-    count++;
-    if (count > 1000) {
-        exit(67);
-    }
     GrammarNode *gr_node = rule->data;
     Token *token = (*pLl_node)->data;
     TreeNode *ast_branch = NULL;
@@ -42,12 +35,15 @@ TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
         }
     } else if (gr_node->ctx == CTX_ALL_CHILDREN) {
         rule_child = rule->child;
+        int s = 0;
         while (rule_child != NULL) {
             ast_sibling = recursive_descent_parser(pLl_node, rule_child, rules);
             if (ast_sibling == NULL) {
                 break;
             }
-            if (ast_branch == NULL) {
+            if (((GrammarNode *)(rule_child->data))->label == -1) {
+                Tree_destruct(ast_sibling, Token_destruct);
+            } else if (ast_branch == NULL) {
                 ast_branch = ast_sibling;
             } else {
                 Tree_add_sibling_node(ast_branch, ast_sibling);
@@ -60,17 +56,12 @@ TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
     } else if (gr_node->ctx == CTX_RULE) {
         ast_branch = recursive_descent_parser(
                 pLl_node,
-                rules[gr_node->target],
+                rules[(int)(gr_node->target)],
                 rules);
         if (ast_branch != NULL) {
             return ast_branch;
         }
     }
-//    printf("No match: aborting call\n");
-//    printf("At token: ");
-//    Token_print(token);
-//    printf(" (line %d)\n", token->line);
-//    Tree_print(ast_branch, Token_print, 0, 0);
     Tree_destruct(ast_branch, Token_destruct);
     *pLl_node = ll_pos;
     return NULL;
@@ -101,6 +92,11 @@ TreeNode *recursive_descent_parser(LLNode **pLl_node, TreeNode *rule, TreeNode *
             Tree_add_child_node(ast_node, ast_branch);
         }
     }
+    if (gr_node->label == -2) {
+        ast_branch = Tree_make_orphan(ast_node, ast_node->child);
+        Tree_destruct(ast_node, Token_destruct);
+        return ast_branch;
+    }
     return ast_node;
 }
 
@@ -115,8 +111,9 @@ TreeNode *parse_grammar_tree(char *buffer, int *p) {
     gr_node->ctx = options & 3;
     gr_node->token_type = options >> 4;
     gr_node->target = buffer[*p + 2];
+    gr_node->label = buffer[*p + 3];
     node->data = gr_node;
-    *p += 3;
+    *p += 4;
     for (i = 0; i < n_children; i++) {
         Tree_add_child_node(node, parse_grammar_tree(buffer, p));
     }

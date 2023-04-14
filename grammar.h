@@ -16,6 +16,7 @@ typedef struct {
     char ctx;
     char token_type;
     char target;
+    char label;
 } GrammarNode;
 
 void grammar_node_print(void *data);

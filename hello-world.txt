@@ -1,21 +1,8 @@
 function main(argc argv) {
     set x 4677564;
+    set a (add a 1);
     set msg "Hello world";
     print msg;
-}
-
-if (5) {
-    main;
-} else {
-    stuff;
-}
-
-while (1) {
-    stuff;
-}
-
-for (1; 2; 3) {
-    stuff;
 }
 
 main;
