@@ -40,6 +40,7 @@ int main(int argc, char *argv[]) {
         str[1] = 0x30 + i % 10;
         HM_add_string(hashmap, str);
     }
+    HM_remove(hashmap, "20", free);
     HM_destruct(hashmap, free);
     return 0;
 }

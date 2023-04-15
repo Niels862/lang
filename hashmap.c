@@ -67,24 +67,18 @@ int HM_add(HashMap *hashmap, void *data) {
     HashMapNode *node;
     long long hash = hashmap->hash_func(data);
     int bucket = hash & (hashmap->n_buckets - 1);
-    node = hashmap->buckets[bucket];
-    if (node == NULL) {
-        node = malloc(sizeof(HashMapNode));
-        hashmap->buckets[bucket] = node;
-    } else {
-        while (node != NULL) {
-            if (node->hash == hash && hashmap->comp_func(node->data, data)) {
-                return 1;
-            }
-            temp = node;
-            node = node->next;
+    temp = hashmap->buckets[bucket];
+    while (temp != NULL) {
+        if (temp->hash == hash && hashmap->comp_func(temp->data, data)) {
+            return 1;
         }
-        node = malloc(sizeof(HashMapNode));
-        temp->next = node;
+        temp = temp->next;
     }
+    node = malloc(sizeof(HashMapNode));
+    node->next = hashmap->buckets[bucket];
+    hashmap->buckets[bucket] = node;
     node->data = data;
     node->hash = hash;
-    node->next = NULL;
     hashmap->entries++;
     if (hashmap->entries > hashmap->threshold) {
         HM_rehash(hashmap);
@@ -147,9 +141,6 @@ void HM_rehash(HashMap *hashmap) {
     hashmap->buckets = new_buckets;
     hashmap->n_buckets *= 2;
     hashmap->threshold = (int)(LOAD_FACTOR * hashmap->n_buckets);
-    printf("Rehashed:\n");
-    HM_print(hashmap);
-    printf("B: %d T: %d\n", hashmap->n_buckets, hashmap->threshold);
 }
 
 void HM_destruct(HashMap *hashmap, void (*destructor)(void *)) {
