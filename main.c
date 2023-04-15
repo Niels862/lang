@@ -33,14 +33,17 @@ int compile(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
     char str[3];
     int i;
+    int *p;
     str[2] = '\0';
-    HashMap *hashmap = HM_new(hash_string, comp_string);
+    HashMap *hashmap = HM_new(hash_string, comp_string, free, free);
     for (i = 0; i < 100; i++) {
         str[0] = 0x30 + i / 10;
         str[1] = 0x30 + i % 10;
-        HM_add_string(hashmap, str);
+        p = malloc(sizeof(int));
+        *p = 10 * i;
+        HM_add_string(hashmap, str, p);
     }
-    HM_remove(hashmap, "20", free);
-    HM_destruct(hashmap, free);
+    printf("%d\n", *((int *)HM_get(hashmap, "42")));
+    HM_destruct(hashmap);
     return 0;
 }
