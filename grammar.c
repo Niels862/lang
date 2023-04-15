@@ -35,7 +35,6 @@ TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
         }
     } else if (gr_node->ctx == CTX_ALL_CHILDREN) {
         rule_child = rule->child;
-        int s = 0;
         while (rule_child != NULL) {
             ast_sibling = recursive_descent_parser(pLl_node, rule_child, rules);
             if (ast_sibling == NULL) {

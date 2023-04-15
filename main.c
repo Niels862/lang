@@ -1,9 +1,11 @@
 #include "lexer.h"
 #include "parser.h"
 #include "linkedlist.h"
+#include "hashmap.h"
+#include "utils.h"
 #include <stdio.h>
 
-int main(int argc, char *argv[]) {
+int compile(int argc, char *argv[]) {
     FILE *file;
     LinkedList *tokens;
     if (argc > 1) {
@@ -25,5 +27,19 @@ int main(int argc, char *argv[]) {
 
     LL_destruct(tokens, Token_destruct);
     fclose(file);
+    return 0;
+}
+
+int main(int argc, char *argv[]) {
+    char str[3];
+    int i;
+    str[2] = '\0';
+    HashMap *hashmap = HM_new(hash_string, comp_string);
+    for (i = 0; i < 100; i++) {
+        str[0] = 0x30 + i / 10;
+        str[1] = 0x30 + i % 10;
+        HM_add_string(hashmap, str);
+    }
+    HM_destruct(hashmap, free);
     return 0;
 }
