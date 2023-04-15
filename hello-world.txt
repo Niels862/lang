@@ -1,8 +1,8 @@
-function main(argc argv) {
+function main(x y z) {
     set x 4677564;
-    set a (add a 1);
+    set x (add x 1);
     set msg "Hello world";
     print msg;
 }
 
-main;
+main 1 2 3;

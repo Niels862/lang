@@ -11,6 +11,8 @@ lexer.o: lexer.c lexer.h
 	$(CC) $(CFLAGS) -c lexer.c -o lexer.o
 grammar.o: grammar.c grammar.h
 	$(CC) $(CFLAGS) -c grammar.c -o grammar.o
+hashmap.o: hashmap.c hashmap.h
+	$(CC) $(CFLAGS) -c hashmap.c -o hashmap.o
 linkedlist.o: linkedlist.c linkedlist.h
 	$(CC) $(CFLAGS) -c linkedlist.c -o linkedlist.o
 tree.o: tree.c tree.h
