@@ -31,19 +31,6 @@ int compile(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-    char str[3];
-    int i;
-    int *p;
-    str[2] = '\0';
-    HashMap *hashmap = HM_new(hash_string, comp_string, free, free);
-    for (i = 0; i < 100; i++) {
-        str[0] = 0x30 + i / 10;
-        str[1] = 0x30 + i % 10;
-        p = malloc(sizeof(int));
-        *p = 10 * i;
-        HM_add_string(hashmap, str, p);
-    }
-    printf("%d\n", *((int *)HM_get(hashmap, "42")));
-    HM_destruct(hashmap);
+    compile(argc, argv);
     return 0;
 }

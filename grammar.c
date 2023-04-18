@@ -95,6 +95,8 @@ TreeNode *recursive_descent_parser(LLNode **pLl_node, TreeNode *rule, TreeNode *
         ast_branch = Tree_make_orphan(ast_node, ast_node->child);
         Tree_destruct(ast_node, Token_destruct);
         return ast_branch;
+    } else if (gr_node->label != -1) {
+        ast_node->label = gr_node->label;
     }
     return ast_node;
 }

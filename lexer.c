@@ -175,7 +175,7 @@ Token *lexeme_to_token(char *lexeme, int lexeme_size, int line) {
     } else if (lexeme_size == 1) {
         token->type = TTSeparator;
         token->block = DB_new_string(lexeme, lexeme_size);
-    } else {
+    } else { // TODO: better invalid token error handling
         printf("Error while parsing token: %.*s\n", lexeme_size, lexeme);
     }
     return token;

@@ -1,3 +1,4 @@
+set x 5;
 function main(x y z) {
     set x 4677564;
     set x (add x 1);

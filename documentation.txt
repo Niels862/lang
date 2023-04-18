@@ -1,0 +1,25 @@
+[grammar.bin]
+
+3 bytes header:
+    2 bytes determine size of data section
+    1 byte determines amount of trees
+data section:
+    each tree consists of 4 bytes data, followed by its subtrees
+        1st byte -> amount of children
+        2nd byte -> node options
+        3rd byte -> node target
+        4th byte -> node label
+
+    options are packed as follows (0 = LSB):
+        [0-1]: context:
+            0 -> rule (target = rule)
+            1 -> all children
+            2 -> token (target = token, 255 is global match)
+            3 -> first matching child
+        2 -> at least one if set
+        3 -> at most one if set, else multiple optional matches
+        [4-7]: token type
+
+    node label is used as tree node label, except for two cases:
+        255 (-1) -> not added to ast if child of node with context all children
+        254 (-2) -> first child is added to tree
