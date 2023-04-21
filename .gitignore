@@ -2,4 +2,6 @@
 .VSCodeCounter/
 .idea/
 *.o
+*.d
+compile
 main
