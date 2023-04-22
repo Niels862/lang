@@ -2,14 +2,22 @@
 #include "linkedlist.h"
 #include "datablock.h"
 
-#ifndef STACK_LANG_LEXER_H
-#define STACK_LANG_LEXER_H
+#ifndef LANG_LEXER_H
+#define LANG_LEXER_H
 
 #define BUFFER_SIZE 16
 
- enum TokenType {
+enum TokenType {
     TTKeyword = 0, TTSeparator = 1, TTIdentifier = 2,
     TTIntLit = 3, TTStringLit = 4, TTFloatLit = 5
+};
+
+// LTIdentifier -> starting with '_' or alpha
+// LTString -> starting with '"'
+// LTNumeric -> starting with number
+// LTOperator -> starting with op char
+enum LexemeType {
+    LTEmpty, LTIdentifier, LTString, LTNumeric, LTOperator
 };
 
 enum KeywordId {
@@ -40,6 +48,7 @@ void Token_print(void *data);
 Token *Token_copy(Token *token);
 void Token_destruct(void *data);
 
+int is_sep_char(char c);
 int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int *pLine);
 int lexeme_is_keyword(const char *lexeme, int lexeme_size, int *n);
 int lexeme_is_string(const char *lexeme, int lexeme_size);

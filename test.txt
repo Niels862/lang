@@ -1,1 +1,2 @@
-function main () {}
+test 1 2 3;
+    "hello world"

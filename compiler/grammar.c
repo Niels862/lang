@@ -1,5 +1,4 @@
 #include "grammar.h"
-#include "lexer.h"
 #include <stdlib.h>
 
 void grammar_node_print(void *data) {
@@ -134,13 +133,11 @@ TreeNode **parse_grammar_file(FILE *file, int *pN_rules) {
     fread(&header, sizeof(char), 3, file);
     data_size = header & ((1 << 16) - 1);
     *pN_rules = (header >> 16) & ((1 << 8) - 1);
-    printf("size: %d, rules: %d\n", data_size, *pN_rules);
     rules = malloc((*pN_rules) * sizeof(TreeNode));
     buffer = malloc(data_size * sizeof(char));
     fread(buffer, sizeof(char), data_size, file);
     for (i = 0; i < *pN_rules; i++) {
         rules[i] = parse_grammar_tree(buffer, &p);
-        Tree_print(rules[i], grammar_node_print, 0, 0);
     }
     free(buffer);
     return rules;

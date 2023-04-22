@@ -1,6 +1,7 @@
 #include "lexer.h"
 #include "datablock.h"
 #include "utils.h"
+#include "operator.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -48,28 +49,54 @@ void Token_destruct(void *data) {
     free(data);
 }
 
+int is_sep_char(char c) {
+    return c == ' ' || c == ';' || c == '{' || c == '}' || c == '(' || c == ')'
+            || c == '\n' || c == EOF;
+}
+
 int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int *pLine) {
-    if (isalpha(c) || isdigit(c) || c == '"' || c == '\'' || c == '.' || c == '_'
-            || (*pLexeme_size > 0 && lexeme[0] == '"')) {
+    enum LexemeType type;
+    if (*pLexeme_size == 0) {
+        type = LTEmpty;
+    } else if (isalpha(lexeme[0]) || lexeme[0] == '_') {
+        type = LTIdentifier;
+    } else if (lexeme[0] == '"') {
+        type = LTString;
+    } else if (isdigit(lexeme[0])) {
+        type = LTNumeric;
+    } else if (is_op_char(lexeme[0])) {
+        type = LTOperator;
+    } else {
+        type = -1;
+    }
+    if ( // char extends current lexeme
+        (type == LTEmpty && 
+            (isalpha(c) || isdigit(c) || is_op_char(c) || c == '_' || c == '"'))
+        || (type == LTIdentifier && (isalpha(c) || isdigit(c) || c == '_'))
+        || (type == LTNumeric 
+            && (isdigit(c) || isalpha(c) || c == '_' || c == '.'))
+        || (type == LTString)
+    ) {
         lexeme[*pLexeme_size] = c;
         (*pLexeme_size)++;
-        if (c == '"' && *pLexeme_size > 1) {
-            LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size, *pLine));
-            (*pLexeme_size) = 0;
-        } else if (c == '\n' || c == EOF) {
-            printf("Unexpected EOL: line %d\n", *pLine);
-            return 1;
+        if (type == LTString) {
+            if (c == '"') {
+                LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size, *pLine));
+                (*pLexeme_size) = 0;
+            } else if (c == '\n' || c == EOF) {
+                printf("Unexpected EOL: line %d\n", *pLine);
+                return 1;
+            }
         }
-    } else if (c == ' ' || c == '\t' || c == '\n' || c == '(' || c == ')' || c == '='
-            || c == '{' || c == '}' || c == '[' || c == ']' || c == ';' || c == EOF) {
+    } else { // char terminates current lexeme
         if (*pLexeme_size) {
             LL_add(tokens, lexeme_to_token(lexeme, *pLexeme_size, *pLine));
             (*pLexeme_size) = 0;
         }
-        if (c != ' ' && c != '\t' && c != '\n') {
+        if (is_sep_char(c) && c != ' ' && c != '\n') {
             LL_add(tokens, lexeme_to_token(&c, 1, *pLine));
         }
-        if (c == '\n') {
+        if (c == '\n' || c == EOF) {
             (*pLine)++;
         }
     }
@@ -187,7 +214,7 @@ int lexer(FILE *file, LinkedList *tokens) {
     size_t n_read;
     int lexeme_size = 0;
     int line = 1;
-    int i;
+    unsigned int i;
     do {
         n_read = fread(buffer, sizeof(char), BUFFER_SIZE, file);
         for (i = 0; i < n_read; i++) {
