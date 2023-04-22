@@ -1,15 +1,17 @@
 #include <stdio.h>
+#include "operator.h"
 #include "linkedlist.h"
 #include "datablock.h"
 
 #ifndef LANG_LEXER_H
 #define LANG_LEXER_H
 
-#define BUFFER_SIZE 16
+#define BUFFER_SIZE 256
+#define N_KEYWORDS 5
 
 enum TokenType {
     TTKeyword = 0, TTSeparator = 1, TTIdentifier = 2,
-    TTIntLit = 3, TTStringLit = 4, TTFloatLit = 5
+    TTIntLit = 3, TTStringLit = 4, TTFloatLit = 5, TTOperator = 6
 };
 
 // LTIdentifier -> starting with '_' or alpha
@@ -30,12 +32,7 @@ typedef struct {
     enum TokenType type;
 } Token;
 
-typedef struct {
-    char string[16];
-    enum KeywordId id;
-} Keyword;
-
-static const Keyword keywords[] = {
+static Symbol const keywords[] = {
         {"function", KWFunction},
         {"while", KWWhile},
         {"for", KWFor},
@@ -50,7 +47,7 @@ void Token_destruct(void *data);
 
 int is_sep_char(char c);
 int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int *pLine);
-int lexeme_is_keyword(const char *lexeme, int lexeme_size, int *n);
+int lexeme_is_symbol(const char *lexeme, int lexeme_size, Symbol const symbols[], int n_symbols, int *n);
 int lexeme_is_string(const char *lexeme, int lexeme_size);
 int lexeme_is_int(const char *lexeme, int lexeme_size, int *n);
 int lexeme_is_float(const char *lexeme, int lexeme_size, double *d);

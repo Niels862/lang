@@ -1,7 +1,6 @@
 #include "lexer.h"
 #include "datablock.h"
 #include "utils.h"
-#include "operator.h"
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -31,6 +30,8 @@ void Token_print(void *data) {
         printf("%d", *(int *)token->block->data);
     } else if (token->type == TTFloatLit) {
         printf("%f", *(double *)token->block->data);
+    } else if (token->type == TTOperator) {
+        printf("{%s}", operators[*((int *)token->block->data)].string);
     } else {
         printf("Type %d?", token->type);
     }
@@ -103,12 +104,11 @@ int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int 
     return 0;
 }
 
-int lexeme_is_keyword(const char *lexeme, int lexeme_size, int *n) {
+int lexeme_is_symbol(const char *lexeme, int lexeme_size, Symbol const symbols[], int n_symbols, int *n) {
     int i;
-    int n_keywords = sizeof(keywords) / sizeof(Keyword);
-    for (i = 0; i < n_keywords; i++) {
-        if (memcmp(lexeme, keywords[i].string, lexeme_size) == 0) {
-            *n = i;
+    for (i = 0; i < n_symbols; i++) {
+        if (memcmp(lexeme, symbols[i].string, lexeme_size) == 0) {
+            *n = symbols[i].id;
             return 1;
         }
     }
@@ -184,8 +184,11 @@ Token *lexeme_to_token(char *lexeme, int lexeme_size, int line) {
     int n;
     double d;
 
-    if (lexeme_is_keyword(lexeme, lexeme_size, &n)) {
+    if (lexeme_is_symbol(lexeme, lexeme_size, keywords, N_KEYWORDS, &n)) {
         token->type = TTKeyword;
+        token->block = DB_new_copy(&n, sizeof(int));
+    } else if (lexeme_is_symbol(lexeme, lexeme_size, operators, N_OPERATORS, &n)) {
+        token->type = TTOperator;
         token->block = DB_new_copy(&n, sizeof(int));
     } else if (lexeme_is_string(lexeme, lexeme_size)) {
         token->type = TTStringLit;

@@ -1,4 +1,5 @@
 function main(x y z) {
+    a < 5;
     msg "hello world";    
     print msg;
 }

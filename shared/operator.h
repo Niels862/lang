@@ -1,19 +1,21 @@
 #ifndef LANG_OPERATOR
 #define LANG_OPERATOR
 
+#define N_OPERATORS 2
+
+typedef struct {
+    char string[16];
+    int id;
+} Symbol;
+
 enum OperatorID {
     OpAssign
 };
 
-typedef struct {
-    int id;
-    int arity;
-    char op[4];
-} Operator;
-
-// Operator operators[] = {
-//     {OpAssign, 2, "="}
-// };
+static Symbol const operators[] = {
+    {"=", OpAssign},
+    {"<><><>", 1}
+};
 
 int is_op_char(char c);
 

@@ -15,7 +15,7 @@ typedef struct {
     char q_low;
     char q_high;
     char ctx;
-    char token_type;
+    enum TokenType token_type;
     char target;
     char label;
 } GrammarNode;
