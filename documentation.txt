@@ -23,3 +23,69 @@ data section:
     node label is used as tree node label, except for two cases:
         255 (-1) -> not added to ast if child of node with context all children
         254 (-2) -> first child is added to tree
+
+[post-linker executable]
+4 bytes header size
+header:
+    4 bytes data region size
+    4 bytes program region size
+    4 bytes amount of functions
+    for each function:
+        1 byte with bit packed options (0 = LSB):
+            0 -> if set: std lib function
+        1 byte function arity
+        if std lib function:
+            4 bytes function id
+        if internal function:
+            4 bytes address of function
+    A function map is created which maps the index of each function to the 
+    address / id. 
+
+data region:
+    Constant strings, arrays and literals which are copied to beginning of 
+    stack at program launch. 
+    Strings are null-terminated.
+    References to non-numeric literals are relative to beginning of data region.
+
+program region:
+    The program only consists of statements. 
+    In the following description, capital letters represent a one-byte, 
+    to-be-determined constant.
+
+    statements:
+        PUSHINT [4 byte integer value]
+        CALL [2 byte function map key]
+        CALL manages the following things:
+            - if function in std lib:
+                calls function, then continues execution
+            - if local function:
+                sets ip to function address
+        GOTO [4 byte value]
+        RETURN 
+        RETURN sets ip to integer at sp
+
+example:
+(data region) (first \0 is used for null pointer)
+\0hello world\0
+(code region)
+
+PUSHINT 1 (address of msg)
+PUSHINT (here + 3 (CALL statement = 3 bytes))
+CALL (key of std print)
+
+PUSHINT 0
+PUSHINT (here + 3 (CALL statement = 3 bytes))
+CALL (key of std exit)
+
+implementation of std print and std exit in C:
+void std_print(Program *program) {
+    // program->sp points to top of stack.
+    // the last pushed integer is at program->sp - 4
+    printf("%s", program->stack[program->sp - 4]);
+}
+
+void std_exit(Program *program) {
+    program->exit = program->stack[program->sp - 4];
+}
+
+program returns with program.exit

@@ -13,8 +13,7 @@ enum OperatorID {
 };
 
 static Symbol const operators[] = {
-    {"=", OpAssign},
-    {"<><><>", 1}
+    {"=", OpAssign}
 };
 
 int is_op_char(char c);
