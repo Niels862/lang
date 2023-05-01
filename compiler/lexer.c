@@ -52,7 +52,7 @@ void Token_destruct(void *data) {
 
 int is_sep_char(char c) {
     return c == ' ' || c == ';' || c == '{' || c == '}' || c == '(' || c == ')'
-            || c == '\n' || c == EOF;
+            || c == ',' || c == '\n' || c == EOF;
 }
 
 int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int *pLine) {
@@ -106,8 +106,14 @@ int lexer_char(char c, LinkedList *tokens, char *lexeme, int *pLexeme_size, int 
 
 int lexeme_is_symbol(const char *lexeme, int lexeme_size, Symbol const symbols[], int n_symbols, int *n) {
     int i;
+    // symbol size includes null, lexeme size does not 
+    // (lexemes not null-terminated)
+    if (lexeme_size >= SYMBOL_SIZE) {
+        return 0;
+    }
     for (i = 0; i < n_symbols; i++) {
-        if (memcmp(lexeme, symbols[i].string, lexeme_size) == 0) {
+        if (memcmp(lexeme, symbols[i].string, lexeme_size) == 0 
+                && symbols[i].string[lexeme_size] == '\0') {
             *n = symbols[i].id;
             return 1;
         }

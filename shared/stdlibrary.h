@@ -9,7 +9,7 @@ void std_exit(Program *pr);
 
 static const Function stdlib_functions[] = {
     {-1, std_print},
-    {-1, std_print}
+    {-1, std_exit}
 };
 
 #endif

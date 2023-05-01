@@ -10,6 +10,7 @@ int parser(LinkedList *tokens) {
     LLNode *ll_node = tokens->first;
     Token *token;
     int n_rules, i;
+    int matched;
 
     grammar_file = fopen("grammar.bin", "rb");
     if (grammar_file == NULL) {
@@ -17,7 +18,7 @@ int parser(LinkedList *tokens) {
         return 1;
     }
     rules = parse_grammar_file(grammar_file, &n_rules);
-    ast_root = recursive_descent_parser(&ll_node, rules[0], rules);
+    ast_root = recursive_descent_parser(&ll_node, rules[0], rules, &matched);
     token = ll_node->data;
     printf("AST:\n");
     Tree_print(ast_root, Token_print, 0, 0);

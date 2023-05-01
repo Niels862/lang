@@ -8,13 +8,15 @@ void grammar_node_print(void *data) {
            gr_node->ctx, gr_node->token_type, gr_node->target);
 }
 
-TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
+TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules, int *pMatched) {
     GrammarNode *gr_node = rule->data;
     Token *token = (*pLl_node)->data;
     TreeNode *ast_branch = NULL;
     TreeNode *ast_sibling;
     TreeNode *rule_child;
     LLNode *ll_pos = *pLl_node;
+    int matched;
+    *pMatched = 1;
     if (gr_node->ctx == CTX_TOKEN) {
         if (gr_node->token_type == token->type
                 && (gr_node->target == -1
@@ -26,8 +28,8 @@ TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
         rule_child = rule->child;
         while (rule_child != NULL) {
             *pLl_node = ll_pos;
-            ast_branch = recursive_descent_parser(pLl_node, rule_child, rules);
-            if (ast_branch != NULL) {
+            ast_branch = recursive_descent_parser(pLl_node, rule_child, rules, &matched);
+            if (matched) {
                 return ast_branch;
             }
             rule_child = rule_child->sibling;
@@ -35,16 +37,18 @@ TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
     } else if (gr_node->ctx == CTX_ALL_CHILDREN) {
         rule_child = rule->child;
         while (rule_child != NULL) {
-            ast_sibling = recursive_descent_parser(pLl_node, rule_child, rules);
-            if (ast_sibling == NULL) {
+            ast_sibling = recursive_descent_parser(pLl_node, rule_child, rules, &matched);
+            if (!matched) {
                 break;
             }
-            if (((GrammarNode *)(rule_child->data))->label == -1) {
-                Tree_destruct(ast_sibling, Token_destruct);
-            } else if (ast_branch == NULL) {
-                ast_branch = ast_sibling;
-            } else {
-                Tree_add_sibling_node(ast_branch, ast_sibling);
+            if (ast_sibling != NULL) {
+                if (((GrammarNode *)(rule_child->data))->label == -1) {
+                    Tree_destruct(ast_sibling, Token_destruct);
+                } else if (ast_branch == NULL) {
+                    ast_branch = ast_sibling;
+                } else {
+                    Tree_add_sibling_node(ast_branch, ast_sibling);
+                }            
             }
             rule_child = rule_child->sibling;
         }
@@ -55,27 +59,30 @@ TreeNode *match(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
         ast_branch = recursive_descent_parser(
                 pLl_node,
                 rules[(int)(gr_node->target)],
-                rules);
-        if (ast_branch != NULL) {
+                rules, &matched);
+        if (matched) {
             return ast_branch;
         }
     }
     Tree_destruct(ast_branch, Token_destruct);
     *pLl_node = ll_pos;
+    *pMatched = 0;
     return NULL;
 }
 
-TreeNode *recursive_descent_parser(LLNode **pLl_node, TreeNode *rule, TreeNode **rules) {
+TreeNode *recursive_descent_parser(LLNode **pLl_node, TreeNode *rule, TreeNode **rules, int *pMatched) {
     TreeNode *ast_node = Tree_new();
     TreeNode *ast_branch;
     GrammarNode *gr_node = rule->data;
+    int matched;
+    *pMatched = 0;
 
     if (gr_node->q_low || (!gr_node->q_low && gr_node->q_high)) {
-        ast_branch = match(pLl_node, rule, rules);
+        ast_branch = match(pLl_node, rule, rules, &matched);
         // return if not at least one
         if (ast_branch != NULL) {
             Tree_add_child_node(ast_node, ast_branch);
-        } else if (gr_node->q_low) {
+        } else if (gr_node->q_low && !matched) {
             Tree_destruct(ast_node, Token_destruct);
             return NULL;
         }
@@ -83,17 +90,18 @@ TreeNode *recursive_descent_parser(LLNode **pLl_node, TreeNode *rule, TreeNode *
 
     if (!gr_node->q_high) { // q_low or more
         while (1) {
-            ast_branch = match(pLl_node, rule, rules);
-            if (ast_branch == NULL) {
+            ast_branch = match(pLl_node, rule, rules, &matched);
+            if (!matched) {
                 break;
             }
-            Tree_add_child_node(ast_node, ast_branch);
+            if (ast_branch != NULL) {
+                Tree_add_child_node(ast_node, ast_branch);  
+            }
         }
     }
+    *pMatched = 1;
     if (gr_node->label == -2) {
-        ast_branch = Tree_make_orphan(ast_node, ast_node->child);
-        Tree_destruct(ast_node, Token_destruct);
-        return ast_branch;
+        return Tree_make_orphans(ast_node, Token_destruct);
     } else if (gr_node->label != -1) {
         ast_node->label = gr_node->label;
     }

@@ -1,7 +1,7 @@
 function main(x y z) {
-    a < 5;
-    msg "hello world";    
-    print msg;
+    a < 5 < 7 < 9;
+    msg("hello world");    
+    print(msg);
 }
 
-main 1 2 3;
+main(1, 2, 3);
