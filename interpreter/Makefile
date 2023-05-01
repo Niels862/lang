@@ -1,4 +1,4 @@
-BINARY=compile
+BINARY=interpret
 CODEDIRS=./ ../shared/
 
 CC=gcc

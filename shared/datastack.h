@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdint.h>
 
 #ifndef DATASTACK_H
 #define DATASTACK_H
@@ -13,11 +14,6 @@ typedef struct {
 } DataStack;
 
 DataStack *DS_new();
-void DS_push();
-void DS_pop();
-void DS_peek();
-void DS_store(int i);
-void DS_load(int i);
 void DS_destruct(DataStack *stack);
 
 #endif

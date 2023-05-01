@@ -37,6 +37,34 @@ LLNode *LL_add(LinkedList *list, void *data) {
     return node;
 }
 
+LLNode *LL_push(LinkedList *list, void *data) {
+    LLNode *node = malloc(sizeof(LLNode));
+    node->data = data;
+    node->next = list->first;
+    if (list->first == NULL) {
+        list->first = node;
+        list->last = node;
+    } else {
+        list->first = node;
+    }
+    list->length++;
+    return node;
+}
+
+LLNode *LL_pop(LinkedList *list) {
+    LLNode *node = list->first;
+    if (node == NULL) {
+        return NULL;
+    }
+    list->first = node->next;
+    if (node->next == NULL) {
+        list->last = NULL;
+    }
+    node->next = NULL;
+    list->length--;
+    return node;
+}
+
 void LL_next(LLNode **pNode) {
     *pNode = (*pNode)->next;
 }

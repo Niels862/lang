@@ -14,7 +14,12 @@ typedef struct {
 
 void LL_print(LinkedList *list, void (*printer)(void *));
 LinkedList *LL_new();
+// Adds to end of list and returns node
 LLNode *LL_add(LinkedList *list, void *data);
+// Adds to start of list and returns node
+LLNode *LL_push(LinkedList *list, void *data);
+// Pops from start of list if non-empty, else NULL
+LLNode *LL_pop(LinkedList *list);
 void LL_next(LLNode **pNode);
 void LL_destruct(LinkedList *list, void (*destructor)(void *));
 

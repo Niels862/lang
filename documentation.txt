@@ -89,3 +89,14 @@ void std_exit(Program *program) {
 }
 
 program returns with program.exit
+
+f(2 * x) + g(h(), y)
+
+push 2
+push [x]
+mul	; pops 2 elements and pushes result of multiplication
+call f
+call h
+push y
+call g
+add 
