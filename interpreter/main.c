@@ -2,8 +2,19 @@
 #include <stdio.h>
 
 int interpret(int argc, char *argv[]) {
-    Program *pr = Program_new();
-
+    Program *pr;
+    FILE *file;
+    if (argc < 2) {
+        printf("Expected filename\n");
+        return 1;
+    }
+    file = fopen(argv[1], "rb");
+    if (file == NULL) {
+        printf("Could not open file\n");
+    }
+    pr = Program_new();
+    Program_open(pr, file);
+    fclose(file);
     Program_destruct(pr);
     return 0;
 }

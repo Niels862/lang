@@ -8,11 +8,11 @@
 int compile(int argc, char *argv[]) {
     FILE *file;
     LinkedList *tokens;
-    if (argc > 1) {
-        file = fopen(argv[1], "rb");
-    } else {
-        file = fopen("hello-world.txt", "rb");
+    if (argc < 2) {
+        printf("Expected filename\n");
+        return 1;
     }
+    file = fopen(argv[1], "rb");
     if (file == NULL) {
         printf("Could not open file\n");
         return 1;

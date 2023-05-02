@@ -14,6 +14,7 @@ typedef struct {
 } DataStack;
 
 DataStack *DS_new();
+void DS_expand(DataStack *stack, size_t min_size);
 void DS_destruct(DataStack *stack);
 
 #endif

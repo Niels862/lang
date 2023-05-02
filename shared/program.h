@@ -6,6 +6,7 @@
 
 typedef struct {
     unsigned char *code;
+    size_t code_size;
     DataStack *stack;
     int ip;
     int sp;
@@ -13,7 +14,7 @@ typedef struct {
 } Program;
 
 Program *Program_new();
-void Program_open(Program *pr, FILE file);
+void Program_open(Program *pr, FILE *file);
 void Program_destruct(Program *pr);
 
 #endif
