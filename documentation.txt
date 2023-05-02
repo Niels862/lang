@@ -25,23 +25,13 @@ data section:
         254 (-2) -> first child is added to tree
 
 [post-linker executable]
-4 bytes header size
+4 bytes header size (excluding these 4 bytes)
 header:
     4 bytes data region size
     4 bytes program region size
-    4 bytes amount of functions
-    for each function:
-        1 byte with bit packed options (0 = LSB):
-            0 -> if set: std lib function
-        1 byte function arity
-        if std lib function:
-            4 bytes function id
-        if internal function:
-            4 bytes address of function
-    A function map is created which maps the index of each function to the 
-    address / id. 
 
 data region:
+    Data region starts with zero byte for NULL pointers.
     Constant strings, arrays and literals which are copied to beginning of 
     stack at program launch. 
     Strings are null-terminated.
@@ -54,7 +44,7 @@ program region:
 
     statements:
         PUSHINT [4 byte integer value]
-        CALL [2 byte function map key]
+        CALL [4 bytes offset]
         CALL manages the following things:
             - if function in std lib:
                 calls function, then continues execution

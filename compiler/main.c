@@ -31,6 +31,5 @@ int compile(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-    compile(argc, argv);
-    return 0;
+    return compile(argc, argv);
 }

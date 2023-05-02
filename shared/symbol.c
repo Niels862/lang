@@ -1,4 +1,4 @@
-#include "operator.h"
+#include "symbol.h"
 
 int is_op_char(char c) {
     return c == '=' || c == '>' || c == '<' || c == '+' || c == '-';

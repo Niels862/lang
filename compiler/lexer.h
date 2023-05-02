@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "operator.h"
+#include "symbol.h"
 #include "linkedlist.h"
 #include "datablock.h"
 
@@ -22,23 +22,11 @@ enum LexemeType {
     LTEmpty, LTIdentifier, LTString, LTNumeric, LTOperator
 };
 
-enum KeywordId {
-    KWFunction = 0, KWWhile = 1, KWFor = 2, KWIf = 3, KWElse = 4
-};
-
 typedef struct {
     DataBlock *block;
     int line;
     enum TokenType type;
 } Token;
-
-static Symbol const keywords[] = {
-        {"function", KWFunction},
-        {"while", KWWhile},
-        {"for", KWFor},
-        {"if", KWIf},
-        {"else", KWElse}
-};
 
 void get_token_and_string(void *data, Token **pToken, char **pString);
 void Token_print(void *data);
