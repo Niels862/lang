@@ -107,7 +107,7 @@ int HM_add(HashMap *hashmap, void *key, void *value) {
 
 int HM_add_string(HashMap *hashmap, char *str, void *value) {
     int len = strlen(str) + 1;
-    void *key = malloc(len * sizeof(char));
+    void *key = malloc(len);
     memcpy(key, str, len);
     if (HM_add(hashmap, key, value)) {
         free(key);

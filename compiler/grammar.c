@@ -1,5 +1,6 @@
 #include "grammar.h"
 #include <stdlib.h>
+#include <stdint.h>
 
 void grammar_node_print(void *data) {
     GrammarNode *gr_node = data;
@@ -135,15 +136,15 @@ TreeNode **parse_grammar_file(FILE *file, int *pN_rules) {
     TreeNode **rules;
     // first 2 bytes -> size of data section
     // 3rd byte -> amount of rules
-    int header;
+    uint32_t header;
     int i;
     int p = 0;
-    fread(&header, sizeof(char), 3, file);
+    fread(&header, 1, 3, file);
     data_size = header & ((1 << 16) - 1);
     *pN_rules = (header >> 16) & ((1 << 8) - 1);
     rules = malloc((*pN_rules) * sizeof(TreeNode));
-    buffer = malloc(data_size * sizeof(char));
-    fread(buffer, sizeof(char), data_size, file);
+    buffer = malloc(data_size);
+    fread(buffer, 1, data_size, file);
     for (i = 0; i < *pN_rules; i++) {
         rules[i] = parse_grammar_tree(buffer, &p);
     }

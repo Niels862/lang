@@ -225,7 +225,7 @@ int lexer(FILE *file, LinkedList *tokens) {
     int line = 1;
     unsigned int i;
     do {
-        n_read = fread(buffer, sizeof(char), BUFFER_SIZE, file);
+        n_read = fread(buffer, 1, BUFFER_SIZE, file);
         for (i = 0; i < n_read; i++) {
             if (lexer_char(buffer[i], tokens, lexeme, &lexeme_size, &line)) {
                 return 1;

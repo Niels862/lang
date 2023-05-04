@@ -4,8 +4,8 @@
 #include <string.h>
 
 void malloc_string(void **pDest, char *source, int length) {
-    *pDest = malloc((length + 1) * sizeof(char));
-    memcpy(*pDest, source, length * sizeof(char));
+    *pDest = malloc((length + 1));
+    memcpy(*pDest, source, length);
     *((char *)*pDest + length) = '\0';
 }
 
