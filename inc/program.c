@@ -38,7 +38,7 @@ void Program_execute(Program *pr) {
         return;
     }
     while (pr->ip < pr->code_size) {
-        operations[pr->code[pr->ip]].func(pr);
+        operations[pr->code[pr->ip]](pr);
     }
 }
 

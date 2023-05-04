@@ -5,23 +5,18 @@
 
 #define N_OPERATIONS 3
 
+typedef void (*Operation)(Program *pr);
+
 enum OperationID {
     OPNop, OPIPush, OPIAdd
 };
-
-typedef struct {
-    void (*func)(Program *pr);
-    enum OperationID id;
-} Operation;
 
 void OP_nop(Program *pr);
 void OP_ipush(Program *pr);
 void OP_iadd(Program *pr);
 
-static Operation const operations[] = {
-    {OP_nop, OPNop},
-    {OP_ipush, OPIPush},
-    {OP_iadd, OPIAdd}
+static const Operation operations[] = {
+    OP_nop, OP_ipush, OP_iadd
 };
 
 #endif

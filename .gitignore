@@ -4,4 +4,5 @@
 *.o
 *.d
 compile
+interpret
 main
