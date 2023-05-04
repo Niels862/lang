@@ -1,4 +1,5 @@
 #include "program.h"
+#include "operation.h"
 #include <stdint.h>
 
 Program *Program_new() {
@@ -14,17 +15,31 @@ Program *Program_new() {
 
 void Program_open(Program *pr, FILE *file) {
     uint32_t header_size, data_size;
-    char *header;
+    void *header;
+
     fread(&header_size, 4, 1, file);
     header = malloc(header_size);
     fread(header, 1, header_size, file);
+
     data_size = *(uint32_t *)header;
     pr->code_size = *(uint32_t *)(header + 4);
+
     DS_expand(pr->stack, data_size);
-    fread(pr->stack, 1, data_size, file);
+    fread(pr->stack->data, 1, data_size, file);
+
     pr->code = malloc(pr->code_size);
     fread(pr->code, 1, pr->code_size, file);
+
     free(header);
+}
+
+void Program_execute(Program *pr) {
+    if (pr->code == NULL) {
+        return;
+    }
+    while (pr->ip < pr->code_size) {
+        operations[pr->code[pr->ip]].func(pr);
+    }
 }
 
 void Program_destruct(Program *pr) {

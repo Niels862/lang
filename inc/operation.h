@@ -3,10 +3,10 @@
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
 
-#define N_OPERATIONS 0
+#define N_OPERATIONS 3
 
 enum OperationID {
-    OPNop,
+    OPNop, OPIPush, OPIAdd
 };
 
 typedef struct {
@@ -15,9 +15,13 @@ typedef struct {
 } Operation;
 
 void OP_nop(Program *pr);
+void OP_ipush(Program *pr);
+void OP_iadd(Program *pr);
 
 static Operation const operations[] = {
-    {OPNop, OPNop}
+    {OP_nop, OPNop},
+    {OP_ipush, OPIPush},
+    {OP_iadd, OPIAdd}
 };
 
 #endif
