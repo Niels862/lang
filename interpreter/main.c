@@ -13,12 +13,15 @@ int interpret(int argc, char *argv[]) {
     file = fopen(argv[1], "rb");
     if (file == NULL) {
         printf("Could not open file\n");
+        return 1;
     }
     pr = Program_new();
     Program_open(pr, file);
     fclose(file);
+    printf("Code:\n");
     print_datablock(pr->code, pr->code_size, 16);
     Program_execute(pr);
+    printf("Stack after execution:\n");
     DS_print(pr->stack, 16);
     Program_destruct(pr);
     return 0;

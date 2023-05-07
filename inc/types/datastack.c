@@ -38,6 +38,7 @@ void DS_push(DataStack *stack, void *data, size_t size) {
     stack->top += size;
 }
 
+// relative to stack top
 uint32_t DS_load32(DataStack *stack, size_t offset) {
     return *(uint32_t *)(stack->data + stack->top - offset);
 }

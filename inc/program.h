@@ -8,9 +8,8 @@ typedef struct {
     unsigned char *code;
     size_t code_size;
     DataStack *stack;
-    unsigned int ip;
-    unsigned int sp;
-    unsigned int bp;
+    uint32_t ip;
+    uint32_t bp;
 } Program;
 
 Program *Program_new();
