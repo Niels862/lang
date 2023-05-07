@@ -31,20 +31,23 @@ void OP_store_rel32(Program *pr) {
 }
 
 void OP_call(Program *pr) {
-    int ret_address = pr->ip + 5;
+    uint32_t ret_address = pr->ip + 5;
     DS_push(pr->stack, &ret_address, 4);
-    pr->ip = GETU32();
-    pr->bp = pr->stack->top;
-    // value at bp => previous bp
     DS_push(pr->stack, &pr->bp, 4);
+    pr->ip = GETU32();
+    // value at bp = previous bp
+    pr->bp = pr->stack->top - 4;
+}
+
+void OP_ret(Program *pr) {
+    // sets top of stack to the address above the base pointer
+    pr->stack->top = pr->bp + 4;
+    DS_pop(pr->stack, &pr->bp, 4);
+    DS_pop(pr->stack, &pr->ip, 4);
 }
 
 // TODO: return values, possibly reserved space on stack which the value is 
 // copied to upon return
-void OP_ret(Program *pr) {
-    pr->ip = *(uint32_t *)(pr->stack->data + pr->bp - 4);
-    pr->bp = *(uint32_t *)(pr->stack->data + pr->bp);
-}
 
 void OP_jmp(Program *pr) {
     pr->ip = GETU32();

@@ -17,6 +17,7 @@ void DS_print(DataStack *stack, int width);
 DataStack *DS_new();
 void DS_expand(DataStack *stack, size_t min_size);
 void DS_push(DataStack *stack, void *data, size_t size);
+void DS_pop(DataStack *stack, void *data, size_t size);
 uint32_t DS_load32(DataStack *stack, size_t offset);
 void DS_destruct(DataStack *stack);
 

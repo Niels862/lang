@@ -38,6 +38,11 @@ void DS_push(DataStack *stack, void *data, size_t size) {
     stack->top += size;
 }
 
+void DS_pop(DataStack *stack, void *data, size_t size) {
+    memcpy(stack->data - size, data, size);
+    stack->top -= size;
+}
+
 // relative to stack top
 uint32_t DS_load32(DataStack *stack, size_t offset) {
     return *(uint32_t *)(stack->data + stack->top - offset);
